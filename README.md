@@ -16,11 +16,16 @@ Um Spoon para Hammerspoon que exibe uma folha de atalhos (cheat sheet) para o Sh
 
 ## Características
 
-- Exibe uma janela flutuante com todos os atalhos do ShiftIt
+- Exibe uma janela flutuante com todos os atalhos do ShiftIt organizados em categorias:
+  - Atalhos com números (posicionamento em quartos)
+  - Atalhos com setas (posicionamento em metades)
+  - Outros atalhos (maximizar, centralizar, etc)
 - Interface limpa e moderna com fundo semi-transparente
 - Suporte para teclas especiais do macOS (⌃, ⌥, ⌘)
 - Fecha automaticamente com a tecla ESC ou ao pressionar o atalho novamente
-- Totalmente personalizável através do código
+- Barra de rolagem para fácil navegação
+- Janela redimensionável e sempre visível
+- Atalho padrão: ⌃⌥⌘ / (Control + Alt + Command + /)
 
 ### ShiftIt
 
