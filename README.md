@@ -12,20 +12,20 @@ This configuration includes several Spoons (Hammerspoon plugins):
 
 ### ShortcutCheatSheet
 
-Um Spoon para Hammerspoon que exibe uma folha de atalhos (cheat sheet) para o ShiftIt e outros atalhos do sistema.
+A Hammerspoon Spoon that displays a cheat sheet for ShiftIt and other system shortcuts.
 
-## Características
+## Features
 
-- Exibe uma janela flutuante com todos os atalhos do ShiftIt organizados em categorias:
-  - Atalhos com números (posicionamento em quartos)
-  - Atalhos com setas (posicionamento em metades)
-  - Outros atalhos (maximizar, centralizar, etc)
-- Interface limpa e moderna com fundo semi-transparente
-- Suporte para teclas especiais do macOS (⌃, ⌥, ⌘)
-- Fecha automaticamente com a tecla ESC ou ao pressionar o atalho novamente
-- Barra de rolagem para fácil navegação
-- Janela redimensionável e sempre visível
-- Atalho padrão: ⌃⌥⌘ / (Control + Alt + Command + /)
+- Displays a floating window with all ShiftIt shortcuts organized in categories:
+  - Number shortcuts (quarter positioning)
+  - Arrow shortcuts (half positioning)
+  - Other shortcuts (maximize, center, etc)
+- Clean and modern interface with semi-transparent background
+- Support for macOS special keys (⌃, ⌥, ⌘)
+- Automatically closes with ESC key or by pressing the shortcut again
+- Scrollbar for easy navigation
+- Resizable and always-on-top window
+- Default shortcut: ⌃⌥⌘ / (Control + Alt + Command + /)
 
 ### ShiftIt
 
