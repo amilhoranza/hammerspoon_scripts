@@ -10,6 +10,18 @@ A collection of Hammerspoon scripts for macOS window management and productivity
 
 This configuration includes several Spoons (Hammerspoon plugins):
 
+### ShortcutCheatSheet
+
+Um Spoon para Hammerspoon que exibe uma folha de atalhos (cheat sheet) para o ShiftIt e outros atalhos do sistema.
+
+## Características
+
+- Exibe uma janela flutuante com todos os atalhos do ShiftIt
+- Interface limpa e moderna com fundo semi-transparente
+- Suporte para teclas especiais do macOS (⌃, ⌥, ⌘)
+- Fecha automaticamente com a tecla ESC ou ao pressionar o atalho novamente
+- Totalmente personalizável através do código
+
 ### ShiftIt
 
 A powerful window management system inspired by the original ShiftIt app. All shortcuts use the modifier combination `ctrl + alt + cmd`.

@@ -31,4 +31,10 @@ hs.loadSpoon("ConfigReloader"):start()
 --   a:     Arrange windows in 4 quarters
 --   t:     Arrange windows in 3 columns
 hs.loadSpoon("ShiftIt")
+
+-- ShortcutCheatSheet: Displays a cheat sheet of keyboard shortcuts
+-- Shows a web view with all the shortcuts when you press Control + Alt + Command + /
+hs.loadSpoon("ShortcutCheatSheet"):start()
+
 spoon.ShiftIt:bindHotkeys({})
+
