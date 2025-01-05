@@ -79,7 +79,8 @@ git clone https://github.com/amilhoranza/hammerspoon_scripts.git ~/.hammerspoon
     ├── FinderEnhancer.spoon/
     ├── CaffeineMenu.spoon/
     ├── ConfigReloader.spoon/
-    └── ShiftIt.spoon/
+    ├── ShiftIt.spoon/
+    └── ShortcutCheatSheet.spoon/
 ```
 
 ## Contributing
