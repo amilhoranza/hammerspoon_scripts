@@ -2,7 +2,7 @@ local obj = {}
 obj.__index = obj
 obj.name = "ShortcutCheatSheet"
 obj.version = "1.0"
-obj.author = "Your Name"
+obj.author = "Andre Miglioranza"
 
 -- Atalhos do ShiftIt
 local shortcuts = {
