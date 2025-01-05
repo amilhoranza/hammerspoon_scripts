@@ -1,6 +1,13 @@
+-- Configuração básica
+hs.window.animationDuration = 0
+
+-- Logger para debug
+local logger = hs.logger.new('init.lua', 'debug')
+logger.i("Iniciando Hammerspoon")
+
 -- SpoonManager
 if hs.loadSpoon("SpoonManager") then
-  spoon.SpoonManager:start()
+    spoon.SpoonManager:start()
 end
 
 -- FinderEnhancer
@@ -27,3 +34,6 @@ end
 if hs.loadSpoon("ShortcutCheatSheet") then
     spoon.ShortcutCheatSheet:start()
 end
+
+-- Alerta inicial
+hs.alert.show("Hammerspoon configurado!")

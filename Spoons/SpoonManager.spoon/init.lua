@@ -12,8 +12,8 @@ obj.version = "1.0"
 obj.author = "André Miglioranza"
 obj.license = "MIT"
 
--- Default configuration
-obj.defaultConfig = {
+-- Inicializar config antes de qualquer uso
+obj.config = {
     repositories = {
         {
             name = "Personal Spoons",
@@ -39,54 +39,121 @@ function obj:createProgressWindow()
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial;
                     margin: 0;
                     padding: 20px;
-                    background: #1E1E1E;
-                    color: #FFFFFF;
+                    background: #1A1B1E;
+                    color: #E4E5E7;
                 }
                 .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
                     font-size: 18px;
-                    font-weight: bold;
-                    margin-bottom: 15px;
+                    font-weight: 500;
+                    margin-bottom: 20px;
                     color: #FFFFFF;
-                    background: #2D2D2D;
-                    padding: 10px;
+                    background: linear-gradient(90deg, #2C2D31 0%, #1A1B1E 100%);
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                }
+                .header-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .header-icon {
+                    font-size: 24px;
+                }
+                .esc-hint {
+                    font-size: 13px;
+                    color: #8B8D91;
+                    padding: 5px 10px;
+                    background: rgba(255,255,255,0.1);
                     border-radius: 5px;
                 }
                 #log {
-                    font-family: Monaco, monospace;
+                    font-family: "SF Mono", Monaco, Menlo, monospace;
                     font-size: 13px;
-                    line-height: 1.5;
+                    line-height: 1.6;
                     background: #000000;
-                    color: #FFFFFF;
-                    padding: 15px;
-                    border-radius: 5px;
-                    height: 300px;
+                    color: #E4E5E7;
+                    padding: 20px;
+                    border-radius: 10px;
+                    height: 340px;
                     overflow-y: auto;
                     white-space: pre-wrap;
                     margin-top: 10px;
-                    border: 1px solid #3D3D3D;
+                    border: 1px solid #2C2D31;
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
                 }
-                .success { color: #00FF00; }
-                .error { color: #FF4444; }
-                .info { color: #00BFFF; }
+                .success { 
+                    color: #4ADE80; 
+                    padding: 2px 0;
+                }
+                .error { 
+                    color: #FF5757;
+                    padding: 2px 0;
+                }
+                .info { 
+                    color: #60A5FA; 
+                    padding: 2px 0;
+                }
+                .timestamp {
+                    color: #8B8D91;
+                    margin-right: 8px;
+                }
+                #log::-webkit-scrollbar {
+                    width: 8px;
+                }
+                #log::-webkit-scrollbar-track {
+                    background: #1A1B1E;
+                    border-radius: 4px;
+                }
+                #log::-webkit-scrollbar-thumb {
+                    background: #2C2D31;
+                    border-radius: 4px;
+                }
+                #log::-webkit-scrollbar-thumb:hover {
+                    background: #3C3D41;
+                }
+                .log-entry {
+                    display: flex;
+                    align-items: flex-start;
+                    margin: 2px 0;
+                }
+                .log-icon {
+                    margin-right: 8px;
+                    font-family: -apple-system;
+                }
             </style>
         </head>
         <body>
-            <div class="header">SpoonManager - Updating Spoons (Press ESC to close)</div>
+            <div class="header">
+                <div class="header-title">
+                    <span class="header-icon">🔄</span>
+                    <span>SpoonManager</span>
+                </div>
+                <div class="esc-hint">ESC to close</div>
+            </div>
             <div id="log"></div>
         </body>
         </html>
     ]]
 
+    -- Cálculo preciso do centro da tela
     local screen = hs.screen.primaryScreen()
     local frame = screen:frame()
-    local width = 700
-    local height = 500
-    local rect = hs.geometry.rect(
-        frame.x + (frame.w - width) / 2,
-        frame.y + (frame.h - height) / 2,
-        width,
-        height
-    )
+    local width = 800
+    local height = 550
+    
+    -- Centralizar exatamente no meio da tela
+    local x = frame.x + (frame.w - width) / 2
+    local y = frame.y + (frame.h - height) / 2
+    
+    -- Arredondar as coordenadas para evitar posicionamento em meio-pixel
+    x = math.floor(x)
+    y = math.floor(y)
+    
+    local rect = hs.geometry.rect(x, y, width, height)
 
     if self.progressWindow then
         self.progressWindow:delete()
@@ -95,8 +162,9 @@ function obj:createProgressWindow()
     -- Save HTML template
     self.htmlTemplate = html
     
+    -- Criar a janela já com o tamanho e posição corretos
     self.progressWindow = hs.webview.new(rect)
-    self.progressWindow:windowStyle("closable", "titled")
+    self.progressWindow:windowStyle("closable", "titled", "nonactivating", "utility")
     self.progressWindow:level(hs.drawing.windowLevels.floating)
     self.progressWindow:html(html)
     
@@ -108,7 +176,11 @@ function obj:createProgressWindow()
         return false
     end):start()
     
+    -- Mostrar a janela
     self.progressWindow:show()
+    
+    -- Forçar a janela para frente
+    self.progressWindow:bringToFront(true)
 end
 
 function obj:log(message, type)
@@ -116,9 +188,17 @@ function obj:log(message, type)
         -- Add message to buffer
         local time = os.date("%H:%M:%S")
         local cssClass = type or ""
-        local logEntry = string.format('<div class="%s">[%s] %s</div>', 
+        local icon = type == "success" and "✓" or type == "error" and "✗" or "ℹ"
+        
+        local logEntry = string.format(
+            '<div class="log-entry %s">' ..
+            '<span class="timestamp">[%s]</span>' ..
+            '<span class="log-icon">%s</span>' ..
+            '<span>%s</span>' ..
+            '</div>', 
             cssClass, 
-            time, 
+            time,
+            icon,
             message:gsub("<", "&lt;"):gsub(">", "&gt;"))
         
         table.insert(self.logBuffer, logEntry)
@@ -154,13 +234,11 @@ function obj:closeProgressWindow()
 end
 
 function obj:init()
-    -- Set default config
-    self:setConfig(self.defaultConfig)
-    
     -- Setup update hotkey
     hs.hotkey.bind({"cmd", "alt", "ctrl"}, "u", function()
         self:updateSpoons()
     end)
+    return self
 end
 
 function obj:backupCurrentSpoons()
