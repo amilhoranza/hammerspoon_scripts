@@ -36,4 +36,4 @@ if hs.loadSpoon("ShortcutCheatSheet") then
 end
 
 -- Alerta inicial
-hs.alert.show("Hammerspoon configurado!")
+-- hs.alert.show("Hammerspoon configurado!")
