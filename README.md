@@ -43,7 +43,7 @@ Automatically brings all Finder windows to front when switching to Finder applic
 
 ### CaffeineMenu
 
-Prevents your Mac from going to sleep. Adds a coffee cup icon to the menu bar that you can toggle with a click.
+Prevents your Mac from going to sleep. Adds a AWAKE/SLEEPY button to the menu bar that you can click to toggle.
 
 ### ConfigReloader
 
@@ -60,13 +60,15 @@ git clone https://github.com/amilhoranza/hammerspoon_scripts.git ~/.hammerspoon
 
 ## Structure
 
+```
 ~/.hammerspoon/
-├── init.lua # Main configuration file
-└── Spoons/ # Spoons directory
-├── FinderEnhancer.spoon/
-├── CaffeineMenu.spoon/
-├── ConfigReloader.spoon/
-└── ShiftIt.spoon/
+├── init.lua           # Main configuration file
+└── Spoons/           # Spoons directory
+    ├── FinderEnhancer.spoon/
+    ├── CaffeineMenu.spoon/
+    ├── ConfigReloader.spoon/
+    └── ShiftIt.spoon/
+```
 
 ## Contributing
 
