@@ -154,21 +154,15 @@ function obj:closeProgressWindow()
     self.logBuffer = {}
 end
 
-function obj:testLog()
-    self:log("Teste 1", "info")
-    self:log("Teste 2", "success")
-    self:log("Teste 3", "error")
-end
-
 function obj:init()
     self.config = self.defaultConfig
     self.timer = nil
     
-    -- Cria diretório de backup se não existir
+    -- Create backup directory if it doesn't exist
     if not hs.fs.mkdir(self.config.backupDir) then
         hs.notify.new({
             title = "SpoonManager",
-            informativeText = "Erro ao criar diretório de backup"
+            informativeText = "Error creating backup directory"
         }):send()
     end
     
@@ -180,11 +174,11 @@ function obj:backupCurrentSpoons()
     local spoonDir = hammerspoonDir .. "/Spoons"
     local backupDir = hammerspoonDir .. "/SpoonBackups"
     
-    -- Verifica se o diretório de backup existe
+    -- Check if backup directory exists
     if not hs.fs.attributes(backupDir) then
-        print("Criando diretório de backup:", backupDir)
+        print("Creating backup directory:", backupDir)
         if not hs.fs.mkdir(backupDir) then
-            print("Erro ao criar diretório de backup")
+            print("Error creating backup directory")
             return false
         end
     end
@@ -193,27 +187,27 @@ function obj:backupCurrentSpoons()
         backupDir, 
         os.date("%Y%m%d_%H%M%S"))
     
-    -- Verifica se o diretório de Spoons existe
+    -- Check if Spoons directory exists
     if not hs.fs.attributes(spoonDir) then
-        print("Diretório de Spoons não encontrado:", spoonDir)
+        print("Spoons directory not found:", spoonDir)
         return false
     end
     
-    -- Cria o diretório de backup específico
+    -- Create specific backup directory
     if not hs.fs.mkdir(backupFolder) then
-        print("Não foi possível criar pasta de backup:", backupFolder)
+        print("Could not create backup folder:", backupFolder)
         return false
     end
     
-    -- Copia os arquivos
+    -- Copy files
     local command = string.format("cp -R '%s'/* '%s'", spoonDir, backupFolder)
     local success = os.execute(command)
     
     if success then
-        print("Backup criado com sucesso em:", backupFolder)
+        print("Backup created successfully at:", backupFolder)
         return true
     else
-        print("Erro ao copiar arquivos para backup")
+        print("Error copying files to backup")
         return false
     end
 end
