@@ -72,7 +72,7 @@ function obj:createProgressWindow()
             </style>
         </head>
         <body>
-            <div class="header">SpoonManager - Atualizando Spoons (ESC para fechar)</div>
+            <div class="header">SpoonManager - Updating Spoons (Press ESC to close)</div>
             <div id="log"></div>
         </body>
         </html>
@@ -236,41 +236,41 @@ function obj:cloneOrPullRepository(repo)
 end
 
 function obj:updateSpoons()
-    -- Cria janela de progresso
+    -- Create progress window
     self:createProgressWindow()
     
     local hammerspoonDir = os.getenv("HOME") .. "/.hammerspoon"
     local spoonDestPath = hammerspoonDir .. "/Spoons"
     
-    -- Inicia o processo
-    self:log("Iniciando atualização dos Spoons...", "info")
+    -- Start the process
+    self:log("Starting Spoons update...", "info")
     
     -- Backup
-    self:log("Criando backup dos Spoons existentes...", "info")
+    self:log("Creating backup of existing Spoons...", "info")
     if not self:backupCurrentSpoons() then
-        self:log("Falha ao criar backup, abortando atualização", "error")
+        self:log("Failed to create backup, aborting update", "error")
         return false
     end
-    self:log("Backup criado com sucesso!", "success")
+    self:log("Backup created successfully!", "success")
     
     local updatedSpoons = {}
     local updateCount = 0
     
     for _, repo in ipairs(self.config.repositories) do
-        self:log("Processando repositório: " .. (repo.name or repo.url), "info")
+        self:log("Processing repository: " .. (repo.name or repo.url), "info")
         
         local success, tempDir = self:cloneOrPullRepository(repo)
         
         if success then
-            self:log("Repositório clonado com sucesso", "success")
+            self:log("Repository cloned successfully", "success")
             local spoonSourcePath = tempDir .. "/" .. (repo.path or "")
             
             if not hs.fs.attributes(spoonSourcePath) then
-                self:log("Diretório fonte não encontrado: " .. spoonSourcePath, "error")
+                self:log("Source directory not found: " .. spoonSourcePath, "error")
                 return false
             end
             
-            self:log("Verificando Spoons disponíveis...", "info")
+            self:log("Checking available Spoons...", "info")
             
             local handle = io.popen('ls "' .. spoonSourcePath .. '"')
             if handle then
@@ -279,31 +279,31 @@ function obj:updateSpoons()
                         local sourcePath = spoonSourcePath .. "/" .. file
                         local destPath = spoonDestPath .. "/" .. file
                         
-                        self:log("Atualizando: " .. file, "info")
+                        self:log("Updating: " .. file, "info")
                         
                         os.execute(string.format("rm -rf '%s'", destPath))
                         
                         if os.execute(string.format("cp -R '%s' '%s'", sourcePath, destPath)) then
                             updateCount = updateCount + 1
                             updatedSpoons[updateCount] = file:gsub("%.spoon$", "")
-                            self:log("✓ " .. file .. " atualizado com sucesso", "success")
+                            self:log("✓ " .. file .. " updated successfully", "success")
                         else
-                            self:log("✗ Erro ao atualizar " .. file, "error")
+                            self:log("✗ Error updating " .. file, "error")
                         end
                     end
                 end
                 handle:close()
             end
             
-            self:log("Limpando arquivos temporários...", "info")
+            self:log("Cleaning up temporary files...", "info")
             os.execute(string.format("rm -rf '%s'", tempDir))
         else
-            self:log("Falha ao clonar repositório", "error")
+            self:log("Failed to clone repository", "error")
         end
     end
     
     if updateCount > 0 then
-        local message = string.format("Atualização concluída! %d Spoons atualizados: %s", 
+        local message = string.format("Update completed! %d Spoons updated: %s", 
             updateCount, 
             table.concat(updatedSpoons, ", "))
         self:log(message, "success")
@@ -315,13 +315,13 @@ function obj:updateSpoons()
             }):send()
         end
     else
-        self:log("Nenhum Spoon foi atualizado", "info")
+        self:log("No Spoons were updated", "info")
     end
     
-    -- Adiciona mensagem sobre o fechamento automático
-    self:log("A janela será fechada automaticamente em 30 segundos...", "info")
+    -- Add message about auto-closing
+    self:log("Window will close automatically in 30 seconds...", "info")
     
-    -- Fecha a janela após 30 segundos da conclusão
+    -- Close window after 30 seconds
     if self.closeTimer then
         self.closeTimer:stop()
     end
