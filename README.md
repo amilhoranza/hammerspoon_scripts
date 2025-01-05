@@ -54,9 +54,9 @@ Automatically reloads your Hammerspoon configuration when changes are detected.
 1. Install [Hammerspoon](https://www.hammerspoon.org/)
 2. Clone this repository:
 
-bash
+```bash
 git clone https://github.com/amilhoranza/hammerspoon_scripts.git ~/.hammerspoon
-
+```
 ## Structure
 
 ~/.hammerspoon/
