@@ -6,14 +6,19 @@ obj.author = "Your Name"
 
 -- Atalhos do ShiftIt
 local shortcuts = {
-    ["⌃⌥⌘ ←"] = "Mover janela para metade esquerda",
-    ["⌃⌥⌘ →"] = "Mover janela para metade direita",
-    ["⌃⌥⌘ ↑"] = "Mover janela para metade superior",
-    ["⌃⌥⌘ ↓"] = "Mover janela para metade inferior",
+    -- Atalhos com números
     ["⌃⌥⌘ 1"] = "Mover janela para quarto superior-esquerdo",
     ["⌃⌥⌘ 2"] = "Mover janela para quarto superior-direito",
     ["⌃⌥⌘ 3"] = "Mover janela para quarto inferior-esquerdo",
     ["⌃⌥⌘ 4"] = "Mover janela para quarto inferior-direito",
+    
+    -- Atalhos com setas
+    ["⌃⌥⌘ ←"] = "Mover janela para metade esquerda",
+    ["⌃⌥⌘ →"] = "Mover janela para metade direita",
+    ["⌃⌥⌘ ↑"] = "Mover janela para metade superior",
+    ["⌃⌥⌘ ↓"] = "Mover janela para metade inferior",
+    
+    -- Outros atalhos
     ["⌃⌥⌘ M"] = "Maximizar janela",
     ["⌃⌥⌘ F"] = "Alternar tela cheia",
     ["⌃⌥⌘ Z"] = "Alternar zoom",
@@ -53,19 +58,61 @@ function obj:generateHTML()
                     display: inline-block;
                     min-width: 100px;
                 }
+                .section-header {
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                    color: #64D2FF;
+                    font-size: 1.2em;
+                }
             </style>
         </head>
         <body>
             <h2>Atalhos do ShiftIt</h2>
     ]]
 
-    for key, description in pairs(shortcuts) do
+    -- Atalhos com números
+    html = html .. '<div class="section-header">Atalhos com números</div>'
+    for key, description in pairs({
+        ["⌃⌥⌘ 1"] = shortcuts["⌃⌥⌘ 1"],
+        ["⌃⌥⌘ 2"] = shortcuts["⌃⌥⌘ 2"],
+        ["⌃⌥⌘ 3"] = shortcuts["⌃⌥⌘ 3"],
+        ["⌃⌥⌘ 4"] = shortcuts["⌃⌥⌘ 4"]
+    }) do
         html = html .. string.format([[
             <div class="shortcut">
                 <span class="key">%s</span>
                 <span class="description">%s</span>
             </div>
         ]], key, description)
+    end
+
+    -- Atalhos com setas
+    html = html .. '<div class="section-header">Atalhos com setas</div>'
+    for key, description in pairs({
+        ["⌃⌥⌘ ←"] = shortcuts["⌃⌥⌘ ←"],
+        ["⌃⌥⌘ →"] = shortcuts["⌃⌥⌘ →"],
+        ["⌃⌥⌘ ↑"] = shortcuts["⌃⌥⌘ ↑"],
+        ["⌃⌥⌘ ↓"] = shortcuts["⌃⌥⌘ ↓"]
+    }) do
+        html = html .. string.format([[
+            <div class="shortcut">
+                <span class="key">%s</span>
+                <span class="description">%s</span>
+            </div>
+        ]], key, description)
+    end
+
+    -- Outros atalhos
+    html = html .. '<div class="section-header">Outros atalhos</div>'
+    for key, description in pairs(shortcuts) do
+        if not (string.match(key, "%d$") or string.match(key, "[←→↑↓]$")) then
+            html = html .. string.format([[
+                <div class="shortcut">
+                    <span class="key">%s</span>
+                    <span class="description">%s</span>
+                </div>
+            ]], key, description)
+        end
     end
 
     html = html .. [[
@@ -85,15 +132,37 @@ function obj:showCheatSheet()
     local screen = hs.screen.mainScreen()
     local frame = screen:frame()
     
-    self.webview = hs.webview.new({x = frame.x + 50, y = frame.y + 50, w = frame.w - 100, h = frame.h - 100})
+    -- Reduzindo o tamanho da janela para 60% da tela
+    local width = frame.w * 0.6
+    local height = frame.h * 0.7
+    local x = frame.x + (frame.w - width) / 2
+    local y = frame.y + (frame.h - height) / 2
+    
+    self.webview = hs.webview.new({x = x, y = y, w = width, h = height})
     self.webview:windowStyle("utility")
     self.webview:closeOnEscape(true)
+    self.webview:level(hs.drawing.windowLevels.floating) -- Mantém a janela na frente
+    self.webview:allowGestures(true)  -- Permite gestos e scrolling
     self.webview:html(self:generateHTML())
     self.webview:show()
+
+    -- Adiciona handler para a tecla ESC
+    self.escapeWatcher = hs.eventtap.new({hs.eventtap.event.types.keyDown}, function(event)
+        local keyCode = event:getKeyCode()
+        if keyCode == 53 then -- 53 é o código da tecla ESC
+            self:hideCheatSheet()
+            return true
+        end
+        return false
+    end):start()
 end
 
 function obj:hideCheatSheet()
     if self.webview then
+        if self.escapeWatcher then
+            self.escapeWatcher:stop()
+            self.escapeWatcher = nil
+        end
         self.webview:delete()
         self.webview = nil
     end
