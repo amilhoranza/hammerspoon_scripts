@@ -1,27 +1,8 @@
--- Carrega e configura o SpoonManager primeiro
-print("Carregando SpoonManager...")
-local manager = hs.loadSpoon("SpoonManager")
-if manager then
-    manager:setConfig({
-        repositories = {
-            {
-                name = "Personal Spoons",
-                url = "https://github.com/amilhoranza/hammerspoon_scripts",
-                branch = "main",
-                path = "Spoons"
-            }
-        },
-        checkInterval = 3600 * 12, -- 12 horas
-        notifyOnUpdate = true
-    }):start()
-
-    -- Atalho para atualização manual
-    hs.hotkey.bind({"cmd", "alt", "ctrl"}, "u", function()
-        manager:updateSpoons()
-    end)
+-- SpoonManager
+if hs.loadSpoon("SpoonManager") then
+  spoon.SpoonManager:start()
 end
 
--- Carrega outros Spoons após o SpoonManager
 -- FinderEnhancer
 if hs.loadSpoon("FinderEnhancer") then
     spoon.FinderEnhancer:start()

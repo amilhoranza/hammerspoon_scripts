@@ -12,7 +12,7 @@ obj.version = "1.0"
 obj.author = "André Miglioranza"
 obj.license = "MIT"
 
--- Configurações padrão
+-- Default configuration
 obj.defaultConfig = {
     repositories = {
         {
@@ -22,13 +22,12 @@ obj.defaultConfig = {
             path = "Spoons"
         }
     },
-    backupDir = os.getenv("HOME") .. "/.hammerspoon/SpoonBackups",
-    checkInterval = 86400, -- 24 horas
+    checkInterval = 3600 * 12, -- 12 hours
     notifyOnUpdate = true
 }
 
 function obj:createProgressWindow()
-    -- Inicializa o buffer de log
+    -- Initialize log buffer
     self.logBuffer = {}
     
     local html = [[
@@ -93,7 +92,7 @@ function obj:createProgressWindow()
         self.progressWindow:delete()
     end
 
-    -- Salva o template HTML
+    -- Save HTML template
     self.htmlTemplate = html
     
     self.progressWindow = hs.webview.new(rect)
@@ -114,7 +113,7 @@ end
 
 function obj:log(message, type)
     if self.progressWindow then
-        -- Adiciona a mensagem ao buffer
+        -- Add message to buffer
         local time = os.date("%H:%M:%S")
         local cssClass = type or ""
         local logEntry = string.format('<div class="%s">[%s] %s</div>', 
@@ -124,11 +123,11 @@ function obj:log(message, type)
         
         table.insert(self.logBuffer, logEntry)
         
-        -- Recria o HTML completo
+        -- Recreate full HTML
         local logContent = table.concat(self.logBuffer, "\n")
         local fullHtml = self.htmlTemplate:gsub("</div>%s*</body>", logContent .. "</div></body>")
         
-        -- Atualiza a webview
+        -- Update webview
         self.progressWindow:html(fullHtml)
     end
     print(message)
@@ -150,23 +149,18 @@ function obj:closeProgressWindow()
         self.progressWindow = nil
     end
     
-    -- Limpa o buffer de log
+    -- Clear log buffer
     self.logBuffer = {}
 end
 
 function obj:init()
-    self.config = self.defaultConfig
-    self.timer = nil
+    -- Set default config
+    self:setConfig(self.defaultConfig)
     
-    -- Create backup directory if it doesn't exist
-    if not hs.fs.mkdir(self.config.backupDir) then
-        hs.notify.new({
-            title = "SpoonManager",
-            informativeText = "Error creating backup directory"
-        }):send()
-    end
-    
-    return self
+    -- Setup update hotkey
+    hs.hotkey.bind({"cmd", "alt", "ctrl"}, "u", function()
+        self:updateSpoons()
+    end)
 end
 
 function obj:backupCurrentSpoons()
