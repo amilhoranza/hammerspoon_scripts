@@ -10,11 +10,57 @@ A collection of Hammerspoon scripts for macOS window management and productivity
 
 This configuration includes several Spoons (Hammerspoon plugins):
 
+### SpoonManager
+
+A Spoon that manages the installation and updates of other Spoons from Git repositories.
+
+#### Features
+
+- Manages Spoon updates from configured Git repositories
+- Creates automatic backups before updates
+- Visual progress interface with:
+  - Real-time update logs
+  - Color-coded status messages
+  - Auto-closing window after completion
+- Configurable settings:
+  - Multiple repository support
+  - Custom backup directory
+  - Update notifications
+
+#### Configuration Example
+
+```lua
+hs.loadSpoon("SpoonManager")
+spoon.SpoonManager:setConfig({
+    repositories = {
+        {
+            name = "Personal Spoons",
+            url = "https://github.com/username/spoons",
+            branch = "main",
+            path = "Spoons"
+        }
+    },
+    backupDir = "~/.hammerspoon/SpoonBackups",
+    notifyOnUpdate = true
+})
+spoon.SpoonManager:start()
+```
+
+#### Usage
+
+The SpoonManager will:
+
+1. Create a backup of your current Spoons
+2. Clone/pull the configured repositories
+3. Update all Spoons (except SpoonManager itself)
+4. Show real-time progress in a floating window
+5. Auto-close after 30 seconds or when ESC is pressed
+
 ### ShortcutCheatSheet
 
 A Hammerspoon Spoon that displays a cheat sheet for ShiftIt and other system shortcuts.
 
-## Features
+#### Features
 
 - Displays a floating window with all ShiftIt shortcuts organized in categories:
   - Number shortcuts (quarter positioning)
