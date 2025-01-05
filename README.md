@@ -57,6 +57,7 @@ Automatically reloads your Hammerspoon configuration when changes are detected.
 ```bash
 git clone https://github.com/amilhoranza/hammerspoon_scripts.git ~/.hammerspoon
 ```
+
 ## Structure
 
 ~/.hammerspoon/
