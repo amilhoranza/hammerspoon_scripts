@@ -241,47 +241,44 @@ function obj:init()
     return self
 end
 
-function obj:backupCurrentSpoons()
-    local hammerspoonDir = os.getenv("HOME") .. "/.hammerspoon"
-    local spoonDir = hammerspoonDir .. "/Spoons"
-    local backupDir = hammerspoonDir .. "/SpoonBackups"
+function obj:backupSpoons()
+    local backupDir = os.getenv("HOME") .. "/.hammerspoon/SpoonBackups"
+    local timestamp = os.date("%Y%m%d_%H%M%S")
+    local backupPath = string.format("%s/spoons_backup_%s", backupDir, timestamp)
     
-    -- Check if backup directory exists
-    if not hs.fs.attributes(backupDir) then
-        print("Creating backup directory:", backupDir)
-        if not hs.fs.mkdir(backupDir) then
-            print("Error creating backup directory")
-            return false
-        end
-    end
-
-    local backupFolder = string.format("%s/backup_%s", 
-        backupDir, 
-        os.date("%Y%m%d_%H%M%S"))
+    -- Criar diretório de backup se não existir
+    os.execute("mkdir -p " .. backupDir)
     
-    -- Check if Spoons directory exists
-    if not hs.fs.attributes(spoonDir) then
-        print("Spoons directory not found:", spoonDir)
-        return false
-    end
+    -- Remover backups antigos
+    local cmd = string.format("rm -rf %s/spoons_backup_*", backupDir)
+    os.execute(cmd)
     
-    -- Create specific backup directory
-    if not hs.fs.mkdir(backupFolder) then
-        print("Could not create backup folder:", backupFolder)
-        return false
-    end
+    -- Criar novo backup
+    local spoonsDir = os.getenv("HOME") .. "/.hammerspoon/Spoons"
+    local cmd = string.format("cp -R %s %s", spoonsDir, backupPath)
     
-    -- Copy files
-    local command = string.format("cp -R '%s'/* '%s'", spoonDir, backupFolder)
-    local success = os.execute(command)
-    
-    if success then
-        print("Backup created successfully at:", backupFolder)
-        return true
+    if os.execute(cmd) then
+        self:log("✓ Backup criado em: " .. backupPath, "success")
     else
-        print("Error copying files to backup")
-        return false
+        self:log("✗ Erro ao criar backup", "error")
     end
+    
+    return true
+end
+
+-- Função auxiliar para limpar backups antigos (opcional)
+function obj:cleanOldBackups()
+    local backupDir = os.getenv("HOME") .. "/.hammerspoon/SpoonBackups"
+    
+    -- Manter apenas o backup mais recente
+    local cmd = string.format([[
+        cd %s &&
+        ls -t spoons_backup_* 2>/dev/null |
+        tail -n +2 |
+        xargs rm -rf
+    ]], backupDir)
+    
+    os.execute(cmd)
 end
 
 function obj:cloneOrPullRepository(repo)
@@ -313,7 +310,7 @@ function obj:updateSpoons()
     
     -- Backup
     self:log("Creating backup of existing Spoons...", "info")
-    if not self:backupCurrentSpoons() then
+    if not self:backupSpoons() then
         self:log("Failed to create backup, aborting update", "error")
         return false
     end
