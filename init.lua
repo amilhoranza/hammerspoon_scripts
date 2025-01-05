@@ -1,3 +1,24 @@
+-- Carrega e configura o SpoonManager
+local manager = hs.loadSpoon("SpoonManager")
+manager:setConfig({
+    repositories = {
+        {
+            name = "Personal Spoons",
+            url = "https://github.com/amilhoranza/hammerspoon_scripts",
+            branch = "main",
+            path = "Spoons"
+        }
+    },
+    checkInterval = 3600 * 12, -- 12 horas
+    notifyOnUpdate = true
+}):start()
+
+-- Opcional: Adicionar atalho para atualização manual
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "u", function()
+    manager:updateSpoons()
+end)
+
+
 -- FinderEnhancer: Brings all Finder windows to front when switching to Finder
 -- When you activate Finder, all its windows will automatically come to front
 hs.loadSpoon("FinderEnhancer"):start()
@@ -37,4 +58,3 @@ hs.loadSpoon("ShiftIt")
 hs.loadSpoon("ShortcutCheatSheet"):start()
 
 spoon.ShiftIt:bindHotkeys({})
-
