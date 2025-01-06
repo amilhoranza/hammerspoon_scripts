@@ -15,9 +15,13 @@ if hs.loadSpoon("FinderEnhancer") then
     spoon.FinderEnhancer:start()
 end
 
--- CaffeineMenu
-if hs.loadSpoon("CaffeineMenu") then
-    spoon.CaffeineMenu:start()
+-- -- CaffeineMenu
+-- if hs.loadSpoon("CaffeineMenu") then
+--     spoon.CaffeineMenu:start()
+-- end
+
+if hs.loadSpoon("Caffeine") then
+    spoon.Caffeine:start()
 end
 
 -- ConfigReloader
