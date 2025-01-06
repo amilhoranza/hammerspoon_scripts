@@ -44,5 +44,6 @@ if hs.loadSpoon("KeyboardShortcuts") then
     spoon.KeyboardShortcuts:start()
 end
 
+
 -- Alerta inicial
 -- hs.alert.show("Hammerspoon configurado!")
