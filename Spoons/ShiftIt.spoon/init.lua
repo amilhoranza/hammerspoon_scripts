@@ -191,7 +191,7 @@ function obj:resizeIn() self:resizeWindowInSteps(false) end
 function obj:arrangeWindows()
   -- Get the currently focused application
   local focusedApp = self.hs.window.focusedWindow():application()
-  
+   
   -- Get all windows from the focused application
   local allWindows = focusedApp:visibleWindows()
   local windows = {}
