@@ -189,22 +189,20 @@ function obj:resizeOut() self:resizeWindowInSteps(true) end
 function obj:resizeIn() self:resizeWindowInSteps(false) end
 
 function obj:arrangeWindows()
-  -- Get the currently focused application
-  local focusedApp = self.hs.window.focusedWindow():application()
-   
-  -- Get all windows from the focused application
-  local allWindows = focusedApp:visibleWindows()
-  local windows = {}
+  -- Get all visible windows
+  local allWindows = self.hs.window.orderedWindows()
+  
+  -- Get unique applications from windows, keeping order
+  local seenApps = {}
+  local apps = {}
   for _, window in ipairs(allWindows) do
-    if window:isVisible() and not window:isMinimized() then
-      table.insert(windows, window)
+    local app = window:application()
+    local appId = app:bundleID()
+    if not seenApps[appId] and window:isVisible() and not window:isMinimized() then
+      seenApps[appId] = true
+      table.insert(apps, app)
     end
   end
-  
-  -- Sort windows by ID (higher ID = more recently created)
-  table.sort(windows, function(a, b)
-    return a:id() > b:id()
-  end)
   
   local positions = {
     { x = 0.00, y = 0.00, w = 0.50, h = 0.50 },         -- top left
@@ -213,9 +211,12 @@ function obj:arrangeWindows()
     { x = 0.50, y = 0.50, w = 0.50, h = 0.50 }          -- bottom right
   }
   
-  -- Get only the first 4 windows (most recent ones)
-  for i = 1, math.min(4, #windows) do
-    windows[i]:move(positions[i], nil, true, 0)
+  -- Get only the first 4 apps (most recent ones)
+  for i = 1, math.min(4, #apps) do
+    local mainWindow = apps[i]:mainWindow()
+    if mainWindow then
+      mainWindow:move(positions[i], nil, true, 0)
+    end
   end
 end
 
