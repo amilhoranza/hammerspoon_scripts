@@ -22,9 +22,51 @@ obj.config = {
             path = "Spoons"
         }
     },
-    checkInterval = 3600 * 12, -- 12 hours
+    -- checkInterval = 10,
+    checkInterval = 3600 * 24, -- 24 hours
     notifyOnUpdate = true
 }
+
+-- Adicionar no início do arquivo, após as configurações
+obj.lastCommitHash = {}
+
+function obj:getRemoteHash(repo)
+    local cmd = string.format("git ls-remote %s %s | cut -f1", 
+        repo.url, 
+        repo.branch or "main")
+    
+    local handle = io.popen(cmd)
+    if handle then
+        local result = handle:read("*a"):gsub("%s+", "")  -- remove whitespace
+        handle:close()
+        return result
+    end
+    return nil
+end
+
+function obj:hasUpdates(repo)
+    local currentHash = self:getRemoteHash(repo)
+    if not currentHash then
+        self:log("Unable to check updates for: " .. repo.name, "error")
+        return false
+    end
+
+    local lastHash = self.lastCommitHash[repo.url]
+    if not lastHash then
+        self:log("First check for: " .. repo.name, "info")
+        self.lastCommitHash[repo.url] = currentHash
+        return true
+    end
+
+    if currentHash ~= lastHash then
+        self:log("Updates found for: " .. repo.name, "info")
+        self.lastCommitHash[repo.url] = currentHash
+        return true
+    end
+
+    self:log("No updates found for: " .. repo.name, "info")
+    return false
+end
 
 function obj:createProgressWindow()
     -- Initialize log buffer
@@ -258,9 +300,9 @@ function obj:backupSpoons()
     local cmd = string.format("cp -R %s %s", spoonsDir, backupPath)
     
     if os.execute(cmd) then
-        self:log("✓ Backup criado em: " .. backupPath, "success")
+        self:log("✓ Backup created in: " .. backupPath, "success")
     else
-        self:log("✗ Erro ao criar backup", "error")
+        self:log("✗ Error creating backup", "error")
     end
     
     return true
@@ -306,6 +348,29 @@ function obj:updateSpoons()
     local spoonDestPath = hammerspoonDir .. "/Spoons"
     
     -- Start the process
+    self:log("Checking for updates...", "info")
+    
+    local needsUpdate = false
+    for _, repo in ipairs(self.config.repositories) do
+        if self:hasUpdates(repo) then
+            needsUpdate = true
+            break
+        end
+    end
+
+    if not needsUpdate then
+        self:log("No updates available", "info")
+        -- Close window after 5 seconds when no updates
+        if self.closeTimer then
+            self.closeTimer:stop()
+        end
+        self.closeTimer = hs.timer.doAfter(5, function()
+            self:closeProgressWindow()
+        end)
+        return false
+    end
+
+    -- Continue with update process only if there are changes
     self:log("Starting Spoons update...", "info")
     
     -- Backup
@@ -396,18 +461,35 @@ function obj:updateSpoons()
 end
 
 function obj:start()
-    -- Executa apenas a atualização manual
+    -- Initial update
     self:updateSpoons()
+    
+    -- Configure timer for automatic checks
+    if self.updateTimer then
+        self.updateTimer:stop()
+    end
+    
+    local interval = self.config.checkInterval
+    self:log("Setting up automatic check every 24 hours", "info")
+    
+    self.updateTimer = hs.timer.doEvery(interval, function()
+        self:log("Running automatic update check...", "info")
+        self:updateSpoons()
+    end)
+    
     return self
 end
 
 function obj:stop()
-    -- Mantido para compatibilidade, mas não faz mais nada
+    if self.updateTimer then
+        self.updateTimer:stop()
+        self.updateTimer = nil
+    end
     return self
 end
 
 function obj:setConfig(config)
-    -- Mescla as configurações manualmente
+    -- Merge configurations manually
     if config then
         if config.repositories then
             self.config.repositories = config.repositories
