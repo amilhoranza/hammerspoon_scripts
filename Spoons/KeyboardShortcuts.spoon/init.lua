@@ -15,11 +15,10 @@ function obj:init()
             from = {mods = {"cmd", "shift"}, key = "a"},
             to = {mods = {"cmd", "shift"}, key = "9"}
         },
-        -- Você pode adicionar mais atalhos aqui
-        -- example = {
-        --     from = {mods = {"cmd", "shift"}, key = "x"},
-        --     to = {mods = {"cmd", "shift"}, key = "y"}
-        -- }
+        screenshot2 = {
+            from = {mods = {"cmd", "shift"}, key = "4"},
+            to = {mods = {"cmd", "shift"}, key = "9"}
+        },
     }
 end
 
